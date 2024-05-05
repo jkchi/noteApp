@@ -33,7 +33,10 @@ class NoteListCreate(generics.ListCreateAPIView):
         # get the logged in user object
         user = self.request.user
         # return the obj filter by logged in user
+        # notice .all and .filter are method, not attribute
         return Note.objects.filter(author = user)
+        
+        
 
     def perform_create(self, serializer):
         # the default create method
@@ -48,7 +51,7 @@ class NoteListCreate(generics.ListCreateAPIView):
 
 class NoteDelete(generics.DestroyAPIView):
     serializer_class = NoteSerializer
-    permission_classes = ['IsAuthenticated']
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         # get the logged in user object
