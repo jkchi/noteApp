@@ -23,8 +23,9 @@ class CreateUserView(generics.CreateAPIView):
 
 class NoteListCreate(generics.ListCreateAPIView):
     # two funciton
-    # list all created notes view
-    # create a new notes
+    # list all created notes view, when get is called
+    # it return a list of note object(dict) with key defined as column name
+    # create a new notes, when post is called
     serializer_class = NoteSerializer
     # only authenticated and pass in jwt token
     permission_classes = [IsAuthenticated]

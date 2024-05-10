@@ -3,10 +3,11 @@
 import {Navigate} from "react-router-dom"
 import {jwtDecode} from "jwt-decode"
 import api from "../api"
-import { REFRESH_TOKEN, ACCESS_TOKEN } from "../constants"
+import { REFRESH_TOKEN, ACCESS_TOKEN } from "../constants.js"
 import { useEffect, useState } from "react"
 
 
+// by faking a legit jwt token this project could be bypassed
 function ProtectedRoute({children}){
     const [isAuthorized, setIsAuthorized] = useState(null)
 
