@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import api from "../api";
-import Note from "../components/Note"
 import { Navbar, Nav, Container,Row,Col ,ListGroup,Button } from 'react-bootstrap';
 import logoImage from '../assets/logo.png';
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -88,25 +87,14 @@ function Home() {
                             {notes.map((note) => {
                                 const formattedDate = new Date(note.create_at).toLocaleDateString("en-US");
                                 return (
-                                    <ListGroup.Item action note={note}  key={note.id}>
-                                        <Row>
-                                            <Col sm={8} className="note-col">
-                                            <button onClick={(e) => getNoteDetail(e,note.id)} style={{border: "none", background: "none", padding: 0, margin: 0}}>
-                                                Title: {note.title}
-                                            </button>
-                                                {/* <a {`Title : ${note.title}`}
-                                                onClick = { (e) => getNoteDetail(e,note.id)}/> */}
-                                                {/* {`Title : ${note.title}`}
-                                                onClick = { (e) => getNoteDetail(e,note.id)}
-                                                </a> */}
-                                                <br />
-                                                {`Create at ${formattedDate}`}
-                                            </Col>
-
-                                            <Col sm={3} className="note-col">
-                                                <Button  variant="danger" className="note-tab" onClick={(e) => deleteNote(e,note.id)}> Delete </Button>
-                                            </Col>
-                                        </Row>
+                                    <ListGroup.Item action note={note}  key={note.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }} >
+                                        <div onClick={(e) => getNoteDetail(e,note.id)}> 
+                                            Title: {note.title}
+                                            <br />
+                                            {`Create at ${formattedDate}`}
+                                        </div>
+                                        
+                                        <Button  variant="danger"  onClick={(e) => deleteNote(e,note.id)}> Delete </Button>
                                     </ListGroup.Item>
                                     );
                             })}

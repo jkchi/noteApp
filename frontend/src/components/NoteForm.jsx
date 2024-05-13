@@ -1,5 +1,5 @@
 import api from "../api";
-import {useEffect, useState} from "react";
+// import {useEffect, useState} from "react";
 
 function NoteForm(props) {
 
@@ -37,21 +37,22 @@ function NoteForm(props) {
         }
         else{
             api
-            .put(`/api/notes/${activateId}`, { content, title, 'id':activateId })
+            .put(`/api/notes/${activateId}/`, {content, title, 'id':activateId })
             .then((res) => {
-                if (res.status === 201){
-                    alert("Note created!");
+                if (res.status === 200){
+                    alert("Note Update!");
                     setTitle("");
                     setContent("");
                 } 
                 else{
-                    alert("Failed to make note.");
+                    alert("Failed to edit note.");
                 } 
                 props.updateFunc();
             })
             .catch((err) => {
-                alert(err);
-                console.log(err);
+                // alert(err);
+                alert("Note already deleted.");
+                // console.log(err);
             });
         }
         setActivateId(null);

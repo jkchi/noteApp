@@ -8,6 +8,7 @@ note_list = NoteViewSet.as_view({
 
 note_detail = NoteViewSet.as_view({
     'get':'retrieve',
+    'put':'update',
     'delete': 'destroy'
 })
 

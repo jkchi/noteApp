@@ -85,3 +85,8 @@ div {
   .note-tab{
     border-right: 1em;
   }
+
+  .note-col-tab{
+    display: flex;
+    flex-direction: column;
+  }
