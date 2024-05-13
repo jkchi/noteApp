@@ -1,13 +1,17 @@
 import { useState, useEffect } from "react";
 import api from "../api";
 import Note from "../components/Note"
+import { Navbar, Nav, Container,Row,Col ,ListGroup,Button } from 'react-bootstrap';
+import logoImage from '../assets/logo.png';
+import 'bootstrap/dist/css/bootstrap.min.css'
 import "../styles/Home.css"
-
+import NoteForm from "../components/NoteForm";
 
 function Home() {
     const [notes, setNotes] = useState([]);
     const [content, setContent] = useState("");
     const [title, setTitle] = useState("");
+    const [activateId,setActivateId] = useState(null);
 
     useEffect(() => {
         getNotes();
@@ -23,7 +27,8 @@ function Home() {
             .catch((err) => alert(err));
     };
 
-    const deleteNote = (id) => {
+    const deleteNote = (e,id) => {
+        e.preventDefault(); 
         api
             .delete(`/api/notes/${id}/`)
             .then((res) => {
@@ -34,62 +39,94 @@ function Home() {
             .catch((error) => alert(error));
     };
 
-    const createNote = (e) => {
-        e.preventDefault();
+    const getNoteDetail = (e,id) => {
+        e.preventDefault(); 
         api
-            .post("/api/notes/", { content, title })
-            .then((res) => {
-                if (res.status === 201){
-                    alert("Note created!");
-                    setTitle("");
-                    setContent("");
-                } 
-                else{
-                    alert("Failed to make note.");
-                    // console.log(res.data);
-                } 
-                getNotes();
+            .get(`/api/notes/${id}/`)
+            .then((res) => res.data)
+            .then((data) => {
+                setTitle(data.title);
+                setContent(data.content);
+                setActivateId(data.id);
             })
-            .catch((err) => {
-                alert(err);
-                console.log(err);
-            });
+            .catch((err) => alert(err));
     };
 
     return (
         <div>
-            <div>
-                <h2>Notes</h2>
-                {notes.map((note) => (
-                    <Note note={note} onDelete={deleteNote} key={note.id} />
-                ))}
-            </div>
-            <h2>Create a Note</h2>
-            <form onSubmit={createNote}>
-                <label htmlFor="title">Title:</label>
-                <br />
-                <input
-                    type="text"
-                    id="title"
-                    name="title"
-                    // required
-                    onChange={(e) => setTitle(e.target.value)}
-                    value={title}
-                />
-                <label htmlFor="content">Content:</label>
-                <br />
-                <textarea
-                    id="content"
-                    name="content"
-                    required
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                ></textarea>
-                <br />
+            
+            <Navbar bg="light" expand="lg">
+                <Container>
+                    <Navbar.Brand href="https://www.youtube.com/watch?v=Jrg9KxGNeJY">
+                        <img
+                            src={logoImage}
+                            className="my-logo" 
+                            alt="Logo"
+                        />
+                    </Navbar.Brand>
+                    <Navbar.Toggle aria-controls="basic-navbar-nav" />
+                    <Navbar.Collapse id="basic-navbar-nav">
+                        <Nav className="me-auto">
+                            <Nav.Link href="/" className = "nav-font" >Home</Nav.Link>
+                            <Nav.Link href="logout" className = "nav-font">Log Out</Nav.Link>
+                            <Nav.Link onClick={() =>{
+                                setActivateId(null);
+                                setContent("");
+                                setTitle("");
+                            }} className = "nav-font">Create Mode</Nav.Link>
+                        </Nav>
+                    </Navbar.Collapse>
+                </Container>
+            </Navbar>
 
-                {/* the value here choose the button text */}
-                <input type="submit" value="Submit"></input>
-            </form>
+            <Container>
+                <Row>
+                    <Col sm={3} className="note-col">
+                        <h2>Created Notes</h2>
+
+                        <ListGroup>
+                            {notes.map((note) => {
+                                const formattedDate = new Date(note.create_at).toLocaleDateString("en-US");
+                                return (
+                                    <ListGroup.Item action note={note}  key={note.id}>
+                                        <Row>
+                                            <Col sm={8} className="note-col">
+                                            <button onClick={(e) => getNoteDetail(e,note.id)} style={{border: "none", background: "none", padding: 0, margin: 0}}>
+                                                Title: {note.title}
+                                            </button>
+                                                {/* <a {`Title : ${note.title}`}
+                                                onClick = { (e) => getNoteDetail(e,note.id)}/> */}
+                                                {/* {`Title : ${note.title}`}
+                                                onClick = { (e) => getNoteDetail(e,note.id)}
+                                                </a> */}
+                                                <br />
+                                                {`Create at ${formattedDate}`}
+                                            </Col>
+
+                                            <Col sm={3} className="note-col">
+                                                <Button  variant="danger" className="note-tab" onClick={(e) => deleteNote(e,note.id)}> Delete </Button>
+                                            </Col>
+                                        </Row>
+                                    </ListGroup.Item>
+                                    );
+                            })}
+                        </ListGroup>
+                        
+                    </Col>
+                    <Col sm={9} className="note-col">
+                        {activateId !== null
+                            ? <h2>Edit Note</h2>
+                            : <h2>Create Note</h2>
+                        }
+                        <NoteForm
+                            controlValue =  {{title, content,activateId}}
+                            controlFunc = {{setContent, setTitle,setActivateId}} 
+                            updateFunc = {getNotes}>
+                        </NoteForm>
+                    </Col>
+                </Row>
+            </Container>
+
         </div>
     );
 }

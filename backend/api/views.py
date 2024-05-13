@@ -32,7 +32,7 @@ class NoteViewSet(viewsets.ModelViewSet):
         
         # the action here is django action not 
         # http request type
-        if self.action in ['create', 'list', 'destroy']:
+        if self.action in ['create', 'list', 'destroy','retrieve']:
             # return an instance of permission class
             # it will perform the checks as an instance
 

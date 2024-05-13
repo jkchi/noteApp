@@ -13,5 +13,5 @@ note_detail = NoteViewSet.as_view({
 
 urlpatterns = [
     path("notes/", note_list, name = 'note-list'),
-    path("notes/<int:pk>/", note_detail, name = 'node-detail'),
+    path("notes/<int:pk>/", note_detail, name = 'note-detail'),
 ]
