@@ -25,7 +25,7 @@ function Home() {
 
     const deleteNote = (id) => {
         api
-            .delete(`/api/notes/delete/${id}/`)
+            .delete(`/api/notes/${id}/`)
             .then((res) => {
                 if (res.status === 204) alert("Note deleted!");
                 else alert("Failed to delete note.");
@@ -41,6 +41,8 @@ function Home() {
             .then((res) => {
                 if (res.status === 201){
                     alert("Note created!");
+                    setTitle("");
+                    setContent("");
                 } 
                 else{
                     alert("Failed to make note.");
@@ -52,8 +54,6 @@ function Home() {
                 alert(err);
                 console.log(err);
             });
-        setTitle("");
-        setContent("");
     };
 
     return (

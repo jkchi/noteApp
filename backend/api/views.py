@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth.models import User
-from rest_framework import generics
+from rest_framework import generics,viewsets
 from .serializer import UserSerializer,NoteSerializer
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Note
@@ -21,41 +21,32 @@ class CreateUserView(generics.CreateAPIView):
     # define the permission of the view, and it is open to all the people
     permission_classes = [AllowAny]
 
-class NoteListCreate(generics.ListCreateAPIView):
-    # two funciton
-    # list all created notes view, when get is called
-    # it return a list of note object(dict) with key defined as column name
-    # create a new notes, when post is called
+class NoteViewSet(viewsets.ModelViewSet):
     serializer_class = NoteSerializer
-    # only authenticated and pass in jwt token
-    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        # get the logged in user object
         user = self.request.user
-        # return the obj filter by logged in user
-        # notice .all and .filter are method, not attribute
         return Note.objects.filter(author = user)
-        
-        
 
+    def get_permissions(self):
+        
+        # the action here is django action not 
+        # http request type
+        if self.action in ['create', 'list', 'destroy']:
+            # return an instance of permission class
+            # it will perform the checks as an instance
+
+            # in a api view 
+            # just define permission_classes = [X]
+            return [IsAuthenticated()]
+    
     def perform_create(self, serializer):
-        # the default create method
-        # we need to overide it
-        if serializer.is_valid():
-            # save the serialized and check note with its author
-            serializer.save(author = self.request.user)
-        else:
-            print(serializer.errors)
 
-        return super().perform_create(serializer)
-
-class NoteDelete(generics.DestroyAPIView):
-    serializer_class = NoteSerializer
-    permission_classes = [IsAuthenticated]
-
-    def get_queryset(self):
-        # get the logged in user object
         user = self.request.user
-        # return the obj filter by logged in user
-        return Note.objects.filter(author = user)
+        # add the extra info
+        serializer.save(author = user)
+
+        # return the method from parent class
+        return super().perform_create(serializer)
+    
+
