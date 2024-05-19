@@ -5,6 +5,7 @@ import { ACCESS_TOKEN, REFRESH_TOKEN } from "../constants.js";
 import "../styles/form.css";
 import LoadingIndicator from "./LoadingIndicator";
 
+// route is the url after base url
 function Form({route, method}){
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")

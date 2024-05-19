@@ -34,20 +34,17 @@ DEBUG = True
 # for now allow all
 ALLOWED_HOSTS = ["*"]
 
+# rest framework setting 
 REST_FRAMEWORK = {
+    # define the default auth class
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication', 
+        'drf_social_oauth2.authentication.SocialAuthentication',
     ),
+    # set the default permission
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
     ],
-}
-
-SIMPLE_JWT = {
-    # token needed to access roots
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
-    # token needed to regenerate the access token
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
 
 # Application definition
@@ -59,9 +56,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # cors
+    'corsheaders',
+    # auth
+    'oauth2_provider',
+    'social_django',
+    'drf_social_oauth2',
+    # own app
     'api',
     'rest_framework',
-    'corsheaders',
 ]
 
 MIDDLEWARE = [
@@ -88,6 +91,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # social login
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -151,3 +157,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # temp all the other site to access the api of this site
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWS_CREDENTIALS = True
+
+# all the local front end to send request
+# CORS_ALLOW_ALL_ORIGINS = ['http://localhost:5173']
+
+# define the auth backend in order django will try
+AUTHENTICATION_BACKENDS = (
+   'drf_social_oauth2.backends.DjangoOAuth2',
+   'django.contrib.auth.backends.ModelBackend',
+)
