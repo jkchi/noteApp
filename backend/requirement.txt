@@ -2,12 +2,10 @@ asgiref
 Django                        
 django-cors-headers           
 djangorestframework           
+djangorestframework-simplejwt 
 psycopg2-binary               
 PyJWT                         
 python-dotenv                 
 pytz                          
 sqlparse                     
-tzdata
-oauth2_provider
-drf_social_oauth2   
-djangorestframework-simplejwt 
+tzdata                        
