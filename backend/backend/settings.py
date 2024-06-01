@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
+from datetime import timedelta
 import os
 
 # load ENV var for credential for our database
@@ -26,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-8ihkk(j14_!=j#gs!)s8gbw-ll049wss7p!!qr24nk43)pv05x'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -34,9 +35,13 @@ DEBUG = True
 # for now allow all
 ALLOWED_HOSTS = ["*"]
 
+
+# define how the api call will be authenticated
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',  
+        'drf_social_oauth2.authentication.SocialAuthentication',
     ),
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.IsAuthenticated",
@@ -62,6 +67,11 @@ INSTALLED_APPS = [
     'api',
     'rest_framework',
     'corsheaders',
+    
+    # social login app
+    'oauth2_provider',
+    'social_django',
+    'drf_social_oauth2',
 ]
 
 MIDDLEWARE = [
@@ -88,6 +98,10 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                
+                #oauth context
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -151,3 +165,40 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # temp all the other site to access the api of this site
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWS_CREDENTIALS = True
+
+
+# define the way of logging in
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.google.GoogleOAuth2',
+    'drf_social_oauth2.backends.DjangoOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_KEY')
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv('SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET')
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
+    'https://www.googleapis.com/auth/userinfo.email',
+    'https://www.googleapis.com/auth/userinfo.profile',
+]
+
+# User login redirection flow:
+# 1. The user clicks the login button, and the frontend redirects the user to Google's OAuth 2.0 authorization endpoint.
+# 2. After logging in and authorizing, Google redirects the user to the specified redirect URI with an authorization code.
+# 3. The frontend receives the authorization code and sends it to the backend, or the browser directly redirects to the backend.
+# 4. The backend uses the authorization code to request an access token and refresh token from Google's token endpoint.
+# 5. The backend receives and stores the access token for subsequent requests to Google API.
+
+
+def to_seconds(td):
+    return int(td.total_seconds())
+
+ACCESS_TOKEN_EXPIRE_DELTA = timedelta(hours=1)  # 10 hours
+REFRESH_TOKEN_EXPIRE_DELTA = timedelta(hours=12)  # 14 days
+
+# length of life of access token
+OAUTH2_PROVIDER = {
+    'ACCESS_TOKEN_EXPIRE_SECONDS': to_seconds(ACCESS_TOKEN_EXPIRE_DELTA),
+    'REFRESH_TOKEN_EXPIRE_SECONDS': to_seconds(REFRESH_TOKEN_EXPIRE_DELTA),
+}

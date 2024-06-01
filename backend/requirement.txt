@@ -8,4 +8,5 @@ PyJWT
 python-dotenv                 
 pytz                          
 sqlparse                     
-tzdata                        
+tzdata          
+drf_social_oauth2              

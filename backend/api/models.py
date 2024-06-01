@@ -8,6 +8,7 @@ class Note(models.Model):
     content = models.TextField()
     create_at = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name = 'notes')
+    is_like = models.BooleanField(default=False)
 
     def __str__(self) -> str:
         return self.title

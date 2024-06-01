@@ -5,12 +5,15 @@ import logoImage from '../assets/logo.png';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import "../styles/Home.css"
 import NoteForm from "../components/NoteForm";
+import { useLike } from "../components/IsLike";
+import { Tree } from 'antd';
 
 function Home() {
     const [notes, setNotes] = useState([]);
     const [content, setContent] = useState("");
     const [title, setTitle] = useState("");
     const [activateId,setActivateId] = useState(null);
+    const {isLike, setIsLike} = useLike();
 
     useEffect(() => {
         getNotes();
@@ -47,9 +50,22 @@ function Home() {
                 setTitle(data.title);
                 setContent(data.content);
                 setActivateId(data.id);
+                setIsLike(data.is_like);
             })
             .catch((err) => alert(err));
     };
+
+
+    const treeData = [
+            {
+              title: 'parent 1-0',
+              key: '0-0-0',
+              children: [{title: 'children 1-1',
+              key: '0-1-1',
+                }]
+            }
+    ];
+
 
     return (
         <div>
@@ -72,6 +88,7 @@ function Home() {
                                 setActivateId(null);
                                 setContent("");
                                 setTitle("");
+                                setIsLike(false);
                             }} className = "nav-font">Create Mode</Nav.Link>
                         </Nav>
                     </Navbar.Collapse>
@@ -114,7 +131,9 @@ function Home() {
                     </Col>
                 </Row>
             </Container>
-
+            <Tree
+            treeData={treeData}
+            />
         </div>
     );
 }

@@ -17,11 +17,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path,include
 from api.views import CreateUserView
+from django.urls import re_path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    
+    #social login
+    re_path(r'^auth/', include('drf_social_oauth2.urls', namespace='drf')),
 
     # just for showing different way of link a url to a view
     path("api/user/register/", CreateUserView.as_view(), name="register"),
